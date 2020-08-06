@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 public class TimestampGeneratorTests {
 
-    private TimestampGenerator timeStampGenerator = new TimestampGenerator();
+    private final TimestampGenerator timeStampGenerator = new TimestampGenerator();
 
     @Test
     public void testTimeStampGeneration() {
