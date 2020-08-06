@@ -13,12 +13,13 @@ import static org.apache.spark.sql.functions.*;
 public class SensorReadsAggregation {
 
     private static final String WINDOW_DURATION = "15 minutes";
+    private static final String TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
     public static Dataset<Row> aggregateData(Dataset<Row> meta, Dataset<Row> values) {
         final var enrichedDataSet = values.join(meta, new Set.Set2<>(DataSourceConstants.COL_SENSOR_ID, DataSourceConstants.COL_CHANNEL_ID).toSeq());
 
         final var groupingExpression = new Set.Set2<>(
-                window(col(DataSourceConstants.COL_TIMESTAMP), WINDOW_DURATION).apply("start").as(DataOutputConstants.COL_TIME_SLOT_START),
+                date_format(window(col(DataSourceConstants.COL_TIMESTAMP), WINDOW_DURATION).apply("start"), TIMESTAMP_FORMAT).as(DataOutputConstants.COL_TIME_SLOT_START),
                 col(DataSourceConstants.COL_LOCATION_ID)
         ).toSeq();
 
