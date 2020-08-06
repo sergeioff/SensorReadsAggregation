@@ -37,4 +37,30 @@ public class TimestampGeneratorTests {
                 timestamps.get(timestamps.size() - 1)
         );
     }
+
+    @Test
+    public void testTimeStampGeneration2() {
+        final var timestamps = timeStampGenerator.generateTimeStamps(
+                Duration.ofHours(1),
+                LocalDate.of(2018, 9, 1),
+                LocalDate.of(2018, 9, 3)
+        );
+
+        Assertions.assertEquals(72, timestamps.size());
+
+        Assertions.assertEquals(
+                Timestamp.valueOf(LocalDateTime.of(2018, 9, 1, 0, 0)),
+                timestamps.get(0)
+        );
+
+        Assertions.assertEquals(
+                Timestamp.valueOf(LocalDateTime.of(2018, 9, 1, 1, 0)),
+                timestamps.get(1)
+        );
+
+        Assertions.assertEquals(
+                Timestamp.valueOf(LocalDateTime.of(2018, 9, 3, 23, 0)),
+                timestamps.get(timestamps.size() - 1)
+        );
+    }
 }
