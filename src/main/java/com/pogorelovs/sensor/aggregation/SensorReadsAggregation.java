@@ -16,16 +16,21 @@ public class SensorReadsAggregation {
     private static final String TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 
     public static Dataset<Row> aggregateData(Dataset<Row> meta, Dataset<Row> values) {
-        final var enrichedDataSet = values.join(meta, new Set.Set2<>(DataSourceConstants.COL_SENSOR_ID, DataSourceConstants.COL_CHANNEL_ID).toSeq());
+        final var joinedDataset = values.join(meta,
+                new Set.Set2<>(DataSourceConstants.COL_SENSOR_ID, DataSourceConstants.COL_CHANNEL_ID).toSeq()
+        );
+
+        joinedDataset.cache();
 
         final var groupingExpression = new Set.Set2<>(
-                date_format(window(col(DataSourceConstants.COL_TIMESTAMP), WINDOW_DURATION).apply("start"), TIMESTAMP_FORMAT).as(DataOutputConstants.COL_TIME_SLOT_START),
+                date_format(window(
+                        col(DataSourceConstants.COL_TIMESTAMP), WINDOW_DURATION).apply("start"), TIMESTAMP_FORMAT
+                ).as(DataOutputConstants.COL_TIME_SLOT_START),
                 col(DataSourceConstants.COL_LOCATION_ID)
         ).toSeq();
 
 
-        // TODO: try to avoid 2 groupBy operations and join. Do it in one pass
-        final var temperatures = enrichedDataSet
+        final var temperatures = joinedDataset
                 .filter(col(DataSourceConstants.COL_CHANNEL_TYPE).eqNullSafe(DataSourceConstants.SENSOR_TEMPERATURE))
                 .groupBy(groupingExpression)
                 .agg(
@@ -35,7 +40,7 @@ public class SensorReadsAggregation {
                         bround(functions.count(DataSourceConstants.COL_VALUE), 2).as(DataOutputConstants.COL_TEMP_COUNT)
                 );
 
-        final var presences = enrichedDataSet
+        final var presences = joinedDataset
                 .filter(col(DataSourceConstants.COL_CHANNEL_TYPE).eqNullSafe(DataSourceConstants.SENSOR_PRESENCE))
                 .groupBy(groupingExpression)
                 .agg(
