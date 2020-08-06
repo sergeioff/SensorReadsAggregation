@@ -1,7 +1,7 @@
 package com.pogorelovs.sensor.aggregation;
 
-import com.pogorelovs.sensor.aggregation.structure.MetadataStructure;
-import com.pogorelovs.sensor.aggregation.structure.ValuesStructure;
+import com.pogorelovs.sensor.structure.MetadataStructure;
+import com.pogorelovs.sensor.structure.ValuesStructure;
 import org.apache.spark.sql.SparkSession;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

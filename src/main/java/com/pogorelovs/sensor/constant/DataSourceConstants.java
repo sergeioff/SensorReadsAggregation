@@ -1,4 +1,4 @@
-package com.pogorelovs.sensor.aggregation.constant;
+package com.pogorelovs.sensor.constant;
 
 public interface DataSourceConstants {
     String COL_SENSOR_ID = "SensorId";

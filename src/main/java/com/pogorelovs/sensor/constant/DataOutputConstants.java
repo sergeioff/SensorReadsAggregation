@@ -1,4 +1,4 @@
-package com.pogorelovs.sensor.aggregation.constant;
+package com.pogorelovs.sensor.constant;
 
 public interface DataOutputConstants {
     String COL_TIME_SLOT_START = "TimeSlotStart";
