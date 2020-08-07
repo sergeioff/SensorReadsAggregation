@@ -1,11 +1,10 @@
-package com.pogorelovs.sensor.enrichment;
+package com.pogorelovs.sensor.generator;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class TimestampGeneratorTests {
@@ -14,10 +13,10 @@ public class TimestampGeneratorTests {
 
     @Test
     public void testTimeStampGeneration() {
-        final var timestamps = timeStampGenerator.generateTimeStamps(
+        final var timestamps = timeStampGenerator.generateTimestamps(
                 Duration.ofMinutes(15),
-                LocalDate.of(2018, 9, 1),
-                LocalDate.of(2018, 9, 3)
+                LocalDateTime.of(2018, 9, 1, 0, 0),
+                LocalDateTime.of(2018, 9, 3, 0, 0)
         );
 
         Assertions.assertEquals(288, timestamps.size());
@@ -40,10 +39,10 @@ public class TimestampGeneratorTests {
 
     @Test
     public void testTimeStampGeneration2() {
-        final var timestamps = timeStampGenerator.generateTimeStamps(
+        final var timestamps = timeStampGenerator.generateTimestamps(
                 Duration.ofHours(1),
-                LocalDate.of(2018, 9, 1),
-                LocalDate.of(2018, 9, 3)
+                LocalDateTime.of(2018, 9, 1, 0, 0),
+                LocalDateTime.of(2018, 9, 3, 0, 0)
         );
 
         Assertions.assertEquals(72, timestamps.size());
