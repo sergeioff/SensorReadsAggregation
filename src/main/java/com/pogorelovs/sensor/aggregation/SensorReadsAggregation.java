@@ -53,6 +53,8 @@ public class SensorReadsAggregation {
                                 .as(DataOutputConstants.COL_PRESENCE_COUNT)
                 );
 
+        joinedDataset.unpersist();
+
         return temperatures.join(presences, seq(List.of(
                 DataOutputConstants.COL_TIME_SLOT_START, DataSourceConstants.COL_LOCATION_ID))
         );
