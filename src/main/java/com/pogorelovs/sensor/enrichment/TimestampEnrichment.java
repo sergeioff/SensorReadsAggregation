@@ -1,6 +1,6 @@
 package com.pogorelovs.sensor.enrichment;
 
-import com.pogorelovs.sensor.Utils;
+import com.pogorelovs.sensor.utils.Utils;
 import com.pogorelovs.sensor.constant.DataOutputConstants;
 import com.pogorelovs.sensor.constant.DataSourceConstants;
 import com.pogorelovs.sensor.generator.TimestampGenerator;
@@ -16,9 +16,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.apache.spark.sql.functions.col;
+import static org.apache.spark.sql.functions.date_format;
 
 public class TimestampEnrichment {
 
@@ -33,16 +35,21 @@ public class TimestampEnrichment {
 
         return meta.select(col(DataSourceConstants.COL_LOCATION_ID))
                 .distinct()
-                .join(timestampsDataset);
+                .join(
+                        timestampsDataset.select(date_format(
+                                col(DataOutputConstants.COL_TIME_SLOT_START), DataOutputConstants.TIMESTAMP_FORMAT
+                        ).as(DataOutputConstants.COL_TIME_SLOT_START))
+                );
     }
 
     /**
      * Enriches resulting dataset (after aggregation) with missing timeslots
-     * @param sparkSession spark sql session
+     *
+     * @param sparkSession     spark sql session
      * @param resultingDataset resulting dataset
-     * @param metaDataset dataset with metadata
-     * @param startDate start date
-     * @param endDate end date
+     * @param metaDataset      dataset with metadata
+     * @param startDate        start date
+     * @param endDate          end date
      * @param timeslotDuration duration of one time slot
      * @return enriched dataset (combined with missing time slots)
      */
@@ -59,8 +66,16 @@ public class TimestampEnrichment {
 
         final var timestampsPerRoomsDataset = generateTimestampsPerRoomsDataset(sparkSession, metaDataset, timestampsList);
 
+        final var nullValueReplacements = Map.<String, Object>of(
+                DataOutputConstants.COL_PRESENCE, false,
+                DataOutputConstants.COL_TEMP_COUNT, 0,
+                DataOutputConstants.COL_PRESENCE_COUNT, 0
+        );
+
         return resultingDataset.join(timestampsPerRoomsDataset,
                 Utils.seq(List.of(DataOutputConstants.COL_TIME_SLOT_START, DataSourceConstants.COL_LOCATION_ID)),
-                "outer");
+                "outer")
+                .na()
+                .fill(nullValueReplacements);
     }
 }

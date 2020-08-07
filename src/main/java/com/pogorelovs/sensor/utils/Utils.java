@@ -1,4 +1,4 @@
-package com.pogorelovs.sensor;
+package com.pogorelovs.sensor.utils;
 
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
