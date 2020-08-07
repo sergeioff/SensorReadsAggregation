@@ -42,7 +42,7 @@ public class Main {
         final var untilDateTime = LocalDateTime.of(until, LocalTime.MIDNIGHT);
 
         final SparkSession spark = SparkSession.builder()
-//                .master("local[*]") //FIXME: uncomment for local runs
+                .master("local[*]") //FIXME: comment if you want to run aggregation as spark-submit job
                 .appName("Sensor reads aggregation")
                 .getOrCreate();
 

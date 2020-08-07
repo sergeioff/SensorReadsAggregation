@@ -10,7 +10,10 @@ repositories {
 }
 
 dependencies {
-    compile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.0.0'
+//    compileOnly group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.0.0' FIXME: uncomment in case of spark-submit job
+//    testCompile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.0.0' FIXME: uncomment in case of spark-submit job
+
+    compile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.0.0' // FIXME: comment in case of spark-submit job
 
     compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
 
