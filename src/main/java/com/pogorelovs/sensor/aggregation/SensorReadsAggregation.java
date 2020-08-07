@@ -4,13 +4,12 @@ import com.pogorelovs.sensor.constant.DataOutputConstants;
 import com.pogorelovs.sensor.constant.DataSourceConstants;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.functions;
 import org.apache.spark.sql.types.DataTypes;
 
 import java.time.Duration;
 import java.util.List;
 
-import static com.pogorelovs.sensor.Utils.seq;
+import static com.pogorelovs.sensor.utils.Utils.seq;
 import static org.apache.spark.sql.functions.*;
 
 public class SensorReadsAggregation {
