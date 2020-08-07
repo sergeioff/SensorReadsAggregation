@@ -88,7 +88,7 @@ public class Main {
 
         if (missingOptions.size() > 0) {
             System.err.println("Missing required arguments: " + missingOptions);
-            new HelpFormatter().printHelp("java -jar sensorReadsAggregation.jar",
+            new HelpFormatter().printHelp("java -jar SensorReadsAggregation-1.0-SNAPSHOT-all.jar",
                     "Required args:", options, "-from 2018-03-23 -until 2018-03-23 -duration 15 " +
                             "-meta datasets/meta.csv -values datasets/values.csv -out out");
             System.exit(-1);

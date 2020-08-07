@@ -1,9 +1,15 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
 
 group 'com.pogorelovs'
 version '1.0-SNAPSHOT'
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 
 repositories {
     mavenCentral()
@@ -23,4 +29,10 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'com.pogorelovs.sensor.Main'
+    }
 }
