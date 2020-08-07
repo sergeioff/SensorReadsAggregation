@@ -10,4 +10,6 @@ public interface DataOutputConstants {
 
     String COL_PRESENCE = "Presence";
     String COL_PRESENCE_COUNT = "PresenceCnt";
+
+    String TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
 }

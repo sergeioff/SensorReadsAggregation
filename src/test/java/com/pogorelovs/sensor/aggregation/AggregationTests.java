@@ -1,28 +1,34 @@
 package com.pogorelovs.sensor.aggregation;
 
+import com.pogorelovs.sensor.constant.DataOutputConstants;
 import com.pogorelovs.sensor.structure.MetadataStructure;
 import com.pogorelovs.sensor.structure.ValuesStructure;
 import org.apache.spark.sql.SparkSession;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+
+import static org.apache.spark.sql.functions.col;
 
 public class AggregationTests {
 
     private final String VALUES_FILE_PATH = "/values.csv";
     private final String META_FILE_PATH = "/meta.csv";
 
-    private SparkSession sparkSession;
+    private static SparkSession sparkSession;
 
-    @BeforeEach
-    private void init() {
+    @BeforeAll
+    private static void init() {
         sparkSession = SparkSession.builder()
                 .master("local[*]")
                 .getOrCreate();
     }
 
-    @AfterEach
-    private void releaseResources() {
+    @AfterAll
+    private static void releaseResources() {
         sparkSession.stop();
     }
 
@@ -36,11 +42,29 @@ public class AggregationTests {
                 .schema(MetadataStructure.STRUCTURE)
                 .csv(this.getClass().getResource(META_FILE_PATH).getPath());
 
-        valuesDataset.show();
-        metaDataset.show();
+        final var aggregatedDataset = SensorReadsAggregation.aggregateData(
+                metaDataset, valuesDataset, Duration.ofMinutes(15)
+        );
 
-        final var aggregatedDataset = SensorReadsAggregation.aggregateData(metaDataset, valuesDataset);
+        final var sortedResultRows = aggregatedDataset.sort(col(DataOutputConstants.COL_TIME_SLOT_START))
+                .collectAsList();
 
-        aggregatedDataset.show();
+        Assertions.assertEquals(2, sortedResultRows.size());
+
+        final var firstWindow = sortedResultRows.get(0);
+        Assertions.assertEquals(61.01, firstWindow.<Double>getAs(DataOutputConstants.COL_TEMP_MIN));
+        Assertions.assertEquals(65.01, firstWindow.<Double>getAs(DataOutputConstants.COL_TEMP_MAX));
+        Assertions.assertEquals(63.26, firstWindow.<Double>getAs(DataOutputConstants.COL_TEMP_AVG));
+        Assertions.assertEquals(4L, firstWindow.<Long>getAs(DataOutputConstants.COL_TEMP_COUNT));
+        Assertions.assertEquals(true, firstWindow.<Boolean>getAs(DataOutputConstants.COL_PRESENCE));
+        Assertions.assertEquals(2L, firstWindow.<Long>getAs(DataOutputConstants.COL_PRESENCE_COUNT));
+
+        final var secondWindow = sortedResultRows.get(1);
+        Assertions.assertEquals(50.01, secondWindow.<Double>getAs(DataOutputConstants.COL_TEMP_MIN));
+        Assertions.assertEquals(50.01, secondWindow.<Double>getAs(DataOutputConstants.COL_TEMP_MAX));
+        Assertions.assertEquals(50.01, secondWindow.<Double>getAs(DataOutputConstants.COL_TEMP_AVG));
+        Assertions.assertEquals(1L, secondWindow.<Long>getAs(DataOutputConstants.COL_TEMP_COUNT));
+        Assertions.assertEquals(false, secondWindow.<Boolean>getAs(DataOutputConstants.COL_PRESENCE));
+        Assertions.assertEquals(0, secondWindow.<Long>getAs(DataOutputConstants.COL_PRESENCE_COUNT));
     }
 }
