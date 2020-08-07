@@ -9,11 +9,9 @@ import java.time.LocalDateTime;
 
 public class TimestampGeneratorTests {
 
-    private final TimestampGenerator timeStampGenerator = new TimestampGenerator();
-
     @Test
     public void testTimeStampGeneration() {
-        final var timestamps = timeStampGenerator.generateTimestamps(
+        final var timestamps = TimestampGenerator.generateTimestamps(
                 Duration.ofMinutes(15),
                 LocalDateTime.of(2018, 9, 1, 0, 0),
                 LocalDateTime.of(2018, 9, 3, 0, 0)
@@ -39,7 +37,7 @@ public class TimestampGeneratorTests {
 
     @Test
     public void testTimeStampGeneration2() {
-        final var timestamps = timeStampGenerator.generateTimestamps(
+        final var timestamps = TimestampGenerator.generateTimestamps(
                 Duration.ofHours(1),
                 LocalDateTime.of(2018, 9, 1, 0, 0),
                 LocalDateTime.of(2018, 9, 3, 0, 0)
