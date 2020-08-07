@@ -4,3 +4,4 @@ Sensor 0,300,presence,Room 0
 Sensor 1,100,temperature,Room 0
 Sensor 1,200,battery,Room 0
 Sensor 1,300,presence,Room 0
+Sensor 3,300,presence,Room 2
