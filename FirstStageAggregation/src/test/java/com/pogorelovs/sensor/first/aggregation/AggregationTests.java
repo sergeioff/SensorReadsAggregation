@@ -1,5 +1,6 @@
 package com.pogorelovs.sensor.first.aggregation;
 
+import com.pogorelovs.sensor.first.SparkSqlTest;
 import com.pogorelovs.sensor.first.constant.DataOutputConstants;
 import com.pogorelovs.sensor.first.structure.MetadataStructure;
 import com.pogorelovs.sensor.first.structure.ValuesStructure;
@@ -13,24 +14,10 @@ import java.time.Duration;
 
 import static org.apache.spark.sql.functions.col;
 
-public class AggregationTests {
+public class AggregationTests extends SparkSqlTest {
 
     private final String VALUES_FILE_PATH = "/values.csv";
     private final String META_FILE_PATH = "/meta.csv";
-
-    private static SparkSession sparkSession;
-
-    @BeforeAll
-    private static void init() {
-        sparkSession = SparkSession.builder()
-                .master("local[*]")
-                .getOrCreate();
-    }
-
-    @AfterAll
-    private static void releaseResources() {
-        sparkSession.stop();
-    }
 
     @Test
     public void testAggregation() {

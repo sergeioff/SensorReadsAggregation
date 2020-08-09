@@ -1,5 +1,6 @@
 package com.pogorelovs.sensor.first.enrichment;
 
+import com.pogorelovs.sensor.first.SparkSqlTest;
 import com.pogorelovs.sensor.first.utils.Utils;
 import com.pogorelovs.sensor.first.aggregation.SensorReadsAggregation;
 import com.pogorelovs.sensor.first.constant.DataOutputConstants;
@@ -20,24 +21,10 @@ import java.util.List;
 
 import static org.apache.spark.sql.functions.col;
 
-public class TimestampEnrichmentTests {
+public class TimestampEnrichmentTests extends SparkSqlTest {
 
     private final String META_FILE_PATH = "/meta.csv";
     private final String VALUES_FILE_PATH = "/values.csv";
-
-    private static SparkSession sparkSession;
-
-    @BeforeAll
-    private static void init() {
-        sparkSession = SparkSession.builder()
-                .master("local[*]")
-                .getOrCreate();
-    }
-
-    @AfterAll
-    private static void releaseResources() {
-        sparkSession.stop();
-    }
 
     @Test
     public void testTimestampsForRoomsGeneration() {
