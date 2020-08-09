@@ -1,0 +1,18 @@
+group 'com.pogorelovs.sensor.first'
+version 'develop'
+
+def mainClass = 'com.pogorelovs.sensor.first.Main'
+
+dependencies {
+//    compileOnly group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.0.0' FIXME: uncomment in case of spark-submit job
+//    testCompile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.0.0' FIXME: uncomment in case of spark-submit job
+
+    compile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.0.0' // FIXME: comment in case of spark-submit job
+}
+
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': mainClass
+    }
+}
