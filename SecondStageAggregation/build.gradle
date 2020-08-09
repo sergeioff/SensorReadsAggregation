@@ -1,0 +1,14 @@
+group 'com.pogorelovs.sensor.second'
+version 'develop'
+
+def mainClass = 'com.pogorelovs.sensor.second.Main'
+
+dependencies {
+
+}
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': mainClass
+    }
+}
