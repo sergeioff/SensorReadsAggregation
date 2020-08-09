@@ -1,38 +1,41 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
 
-group 'com.pogorelovs'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'com.github.johnrengelman.shadow'
-
-sourceCompatibility = 1.11
-targetCompatibility = 1.11
+group 'com.pogorelovs.sensor'
+version 'develop'
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-//    compileOnly group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.0.0' FIXME: uncomment in case of spark-submit job
-//    testCompile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.0.0' FIXME: uncomment in case of spark-submit job
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'com.github.johnrengelman.shadow'
 
-    compile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.0.0' // FIXME: comment in case of spark-submit job
-
-    compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
-
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2'
-    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2'
-}
-
-test {
-    useJUnitPlatform()
-}
-
-shadowJar {
-    manifest {
-        attributes 'Main-Class': 'com.pogorelovs.sensor.Main'
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+
+        testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.2'
+        testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.2'
+    }
+}
+
+task 'package'(type: Sync) {
+    subprojects { p ->
+        from p.tasks.withType(ShadowJar)
+    }
+    into project.buildDir
 }

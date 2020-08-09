@@ -1,2 +1,4 @@
 rootProject.name = 'SensorReadsAggregation'
+include 'FirstStageAggregation'
+include 'SecondStageAggregation'
 
