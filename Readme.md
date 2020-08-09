@@ -13,5 +13,5 @@ note: it's possible to achieve the same behavior via `dataframe.coalesce(1)` but
 
 ## Build
 ```
-gradle shadowJar
+gradle package
 ```
