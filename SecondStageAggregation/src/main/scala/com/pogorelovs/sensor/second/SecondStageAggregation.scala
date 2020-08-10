@@ -17,6 +17,7 @@ import org.json4s.{CustomSerializer, DefaultFormats, Formats}
 import scala.collection.JavaConverters._
 
 object SecondStageAggregation {
+
   val newDuration: Duration = Duration.ofHours(1)
   val customDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 
@@ -35,7 +36,7 @@ object SecondStageAggregation {
     //TODO: Regular read first file of file for start date.
     // Since we know it's sorted ...
 
-    val lineModelsRdd = parseInputFile(inputPath, spark)
+    val lineModelsRdd = parseInputFile(inputPath, spark, customDateFormat)
 
     val firstTimestamp = lineModelsRdd.map(l => l.timeslotStart.toString).distinct().sortBy(t => t).take(1)(0) //FIXME(optimisation): it's possible just to read first line of file via regular file read (without spark)
 
@@ -118,11 +119,11 @@ object SecondStageAggregation {
     providedArgs
   }
 
-  private def parseInputFile(inputPath: String, spark: SparkContext) = {
+  private def parseInputFile(inputPath: String, spark: SparkContext, dateFormat: SimpleDateFormat) = {
     spark.textFile(inputPath)
       .map(line => {
         val parts = line.split(',')
-        val timeslotStart = new Timestamp(customDateFormat.parse(parts(0)).getTime)
+        val timeslotStart = new Timestamp(dateFormat.parse(parts(0)).getTime)
         val locationId = parts(1)
         val tempMin = if (StringUtils.isNotBlank(parts(2))) Option[Double](parts(2).toDouble) else Option.empty
         val tempMax = if (StringUtils.isNotBlank(parts(3))) Option[Double](parts(3).toDouble) else Option.empty
