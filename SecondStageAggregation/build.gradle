@@ -11,11 +11,21 @@ dependencies {
     compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.12'
 
     compile group: 'org.apache.spark', name: 'spark-core_2.12', version: '3.0.0'
+
     compile group: 'org.json4s', name: 'json4s-native_2.12', version: '3.6.9'
+
+    testCompile group: 'org.apache.spark', name: 'spark-core_2.12', version: '3.0.0'
+    testCompile group: 'org.scalatest', name: 'scalatest_2.12', version: '3.2.1'
 }
 
 shadowJar {
     manifest {
         attributes 'Main-Class': mainClass
     }
+}
+
+task scalaTest(dependsOn: ['testClasses'], type: JavaExec) {
+    main = 'org.scalatest.tools.Runner'
+    args = ['-R', 'build/classes/scala/test', '-o']
+    classpath = sourceSets.test.runtimeClasspath
 }

@@ -3,11 +3,12 @@ package com.pogorelovs.sensor.second
 import java.io.File
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
-import java.time.Duration
+import java.time.{Duration, LocalDateTime}
 
 import org.apache.commons.cli.{CommandLine, DefaultParser, HelpFormatter, Options}
 import org.apache.commons.io.FileUtils
 import org.apache.commons.lang3.StringUtils
+import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 import org.json4s.JsonAST.JString
 import org.json4s.JsonDSL._
@@ -41,7 +42,15 @@ object SecondStageAggregation {
     val firstTimestamp = lineModelsRdd.map(l => l.timeslotStart.toString).distinct().sortBy(t => t).take(1)(0) //FIXME(optimisation): it's possible just to read first line of file via regular file read (without spark)
 
     val startLocalDateTime = Timestamp.valueOf(firstTimestamp).toLocalDateTime
+    val resultingLineModels = doAggregation(lineModelsRdd, startLocalDateTime)
 
+    implicit val formats: Formats = DefaultFormats + timestampSerializer + doubleSerializer
+    val json = resultingLineModels.map(write(_)).mkString("[", ",\n", "]")
+
+    FileUtils.write(new File(outputPath), json, false)
+  }
+
+  def doAggregation(lineModelsRdd: RDD[LineModel], startLocalDateTime: LocalDateTime) = {
     val result = lineModelsRdd
       .map(l => ((Duration.between(startLocalDateTime, l.timeslotStart.toLocalDateTime).dividedBy(newDuration),
         l.locationId), l))
@@ -67,16 +76,11 @@ object SecondStageAggregation {
         LineModel(timestamp, locationId, tempMin, tempMax, roundedAverage, tempCnt, presence, presenceCnt)
       })
 
-    implicit val formats: Formats = DefaultFormats + timestampSerializer + doubleSerializer
-
     val resultingLineModels: Array[LineModel] = result.map(l => (l._1._1, l._2))
       .collect()
       .sortBy(l => l._2.timeslotStart.getTime + l._2.locationId)
       .map(_._2)
-
-    val json = resultingLineModels.map(write(_)).mkString("[", ",\n", "]")
-
-    FileUtils.write(new File(outputPath), json, false)
+    resultingLineModels
   }
 
   val timestampSerializer = new CustomSerializer[Timestamp](_ => (
@@ -119,7 +123,7 @@ object SecondStageAggregation {
     providedArgs
   }
 
-  private def parseInputFile(inputPath: String, spark: SparkContext, dateFormat: SimpleDateFormat) = {
+  def parseInputFile(inputPath: String, spark: SparkContext, dateFormat: SimpleDateFormat) = {
     spark.textFile(inputPath)
       .map(line => {
         val parts = line.split(',')
@@ -136,7 +140,7 @@ object SecondStageAggregation {
       })
   }
 
-  private def applyToDouble(a: Option[Double], b: Option[Double], f: (Double, Double) => Double): Option[Double] = {
+  def applyToDouble(a: Option[Double], b: Option[Double], f: (Double, Double) => Double): Option[Double] = {
     if (a.nonEmpty && b.nonEmpty)
       Option[Double](f.apply(a.get, b.get))
     else if (a.nonEmpty) a else b
