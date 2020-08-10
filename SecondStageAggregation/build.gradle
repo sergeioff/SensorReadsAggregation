@@ -1,10 +1,17 @@
+plugins {
+    id "scala"
+}
+
 group 'com.pogorelovs.sensor.second'
 version 'develop'
 
-def mainClass = 'com.pogorelovs.sensor.second.Main'
+def mainClass = 'com.pogorelovs.sensor.second.SecondStageAggregation'
 
 dependencies {
+    compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.12'
 
+    compile group: 'org.apache.spark', name: 'spark-core_2.12', version: '3.0.0'
+    compile group: 'org.json4s', name: 'json4s-native_2.12', version: '3.6.9'
 }
 
 shadowJar {
