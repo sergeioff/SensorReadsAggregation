@@ -64,7 +64,7 @@ public class Main {
         );
 
         enrichedDataset
-                .sort(col(DataOutputConstants.COL_TIME_SLOT_START))
+                .sort(col(DataOutputConstants.COL_TIME_SLOT_START), col(DataSourceConstants.COL_LOCATION_ID))
                 .write()
                 .option("nullValue", null)
                 .csv(outputPath.toString());
